@@ -32,10 +32,29 @@ jobs:
           -configuration Release \
           -derivedDataPath ./build \
           -allowProvisioningUpdates \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
+          CODE_SIGN_IDENTITY="-" \
           build
+    
+    - name: Ad-hoc Code Sign
+      run: |
+        echo "Signing app with ad-hoc signature..."
+        codesign --force --deep --sign - ./build/Build/Products/Release/NightscoutWidget.app
+        
+        echo "Verifying signature..."
+        codesign -dvvv ./build/Build/Products/Release/NightscoutWidget.app
+    
+    - name: Verify Extension is embedded
+      run: |
+        echo "Checking if Widget Extension is embedded in the app..."
+        if [ -d "./build/Build/Products/Release/NightscoutWidget.app/Contents/PlugIns/NightscoutWidgetExtension.appex" ]; then
+          echo "✓ Widget Extension found in app bundle"
+          ls -la ./build/Build/Products/Release/NightscoutWidget.app/Contents/PlugIns/
+        else
+          echo "✗ ERROR: Widget Extension NOT found in app bundle!"
+          echo "Contents of app bundle:"
+          find ./build/Build/Products/Release/NightscoutWidget.app -type d -maxdepth 3
+          exit 1
+        fi
           
     - name: Create App Bundle
       run: |
@@ -48,7 +67,10 @@ jobs:
         mkdir -p ./dmg
         cp -R ./output/NightscoutWidget.app ./dmg/
         
-        # Optional: README oder Link zum Applications-Ordner hinzufügen
+        # Installationsanleitung hinzufügen
+        cp ./INSTALLATION.txt ./dmg/
+        
+        # Optional: Link zum Applications-Ordner hinzufügen
         ln -s /Applications ./dmg/Applications
         
         # DMG erstellen
