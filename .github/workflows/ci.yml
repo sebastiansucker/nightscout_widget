@@ -1,0 +1,54 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '**'  # Don't run on tags (handled by build-release.yml)
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+        
+    - name: Build App
+      run: |
+        xcodebuild -project NightscoutWidget.xcodeproj \
+          -scheme NightscoutWidget \
+          -configuration Release \
+          -derivedDataPath ./build \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          build
+          
+    - name: Create App Bundle
+      run: |
+        mkdir -p ./output
+        cp -R ./build/Build/Products/Release/NightscoutWidget.app ./output/
+        
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: NightscoutWidget-${{ github.sha }}
+        path: ./output/NightscoutWidget.app
+        retention-days: 7
+        
+    - name: Build Summary
+      run: |
+        echo "✅ Build completed successfully" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
