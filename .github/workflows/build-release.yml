@@ -6,6 +6,9 @@ on:
       - 'v*'  # Triggert bei Tags wie v1.0.0, v1.0.1, etc.
   workflow_dispatch:  # Ermöglicht manuelles Auslösen
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
