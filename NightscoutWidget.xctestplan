@@ -1,0 +1,22 @@
+{
+  "configurations" : [
+    {
+      "id" : "5D0B5D7F-E11B-4F29-9F3E-5B2A3C4D8E9F",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:NightscoutWidget.xcodeproj",
+      "identifier" : "MAIN_TARGET_ID",
+      "name" : "NightscoutWidget"
+    }
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}
