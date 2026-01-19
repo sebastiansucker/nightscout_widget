@@ -66,10 +66,7 @@ jobs:
         # DMG erstellen mit hdiutil
         mkdir -p ./dmg
         cp -R ./output/NightscoutWidget.app ./dmg/
-        
-        # Installationsanleitung hinzufügen
-        cp ./INSTALLATION.txt ./dmg/
-        
+
         # Optional: Link zum Applications-Ordner hinzufügen
         ln -s /Applications ./dmg/Applications
         
